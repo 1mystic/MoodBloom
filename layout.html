@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Notes | 2026 Design Concept</title>
+    
+    <!-- Fonts: Mixing Classical Serif with Technical Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --text-main: #ECECEC;
+            --text-muted: #888888;
+            --accent-purple: #bb9af7;
+            --accent-lime: #c6f099;
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            --blur-strength: 24px;
+            --card-radius: 24px;
+            --orb-glow: radial-gradient(circle, rgba(187,154,247,0.4) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            cursor: none; /* Hiding default cursor for the Agent Orb */
+        }
+
+        /* --- 1. The Living Background (Aurora) --- */
+        .ambient-mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.15), transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(50, 80, 60, 0.15), transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(20, 20, 20, 1), transparent 100%);
+            filter: blur(60px);
+            animation: breathe 10s infinite alternate;
+        }
+
+        @keyframes breathe {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* --- 2. The AI Agent (Cursor Orb) --- */
+        #ai-orb {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: exclusion;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        
+        #ai-orb.hover-active {
+            width: 80px;
+            height: 80px;
+            background: transparent;
+            border: 1px solid white;
+            backdrop-filter: blur(2px);
+        }
+
+        #ai-orb::after {
+            content: "AGENT";
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #ai-orb.thinking::after {
+            opacity: 1;
+        }
+
+        /* --- 3. Layout & Header --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px 120px 20px; /* Bottom padding for input bar */
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 4rem;
+            font-weight: 400;
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #fff, #999);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .meta-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .mode-toggles {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mode-pill {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.01);
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-pill.active {
+            background: var(--text-main);
+            color: var(--bg-dark);
+            border-color: var(--text-main);
+        }
+
+        /* --- 4. The Bento Grid --- */
+        .grid-canvas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-auto-rows: 240px;
+            gap: 24px;
+        }
+
+        .note-card {
+            background: var(--glass-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            position: relative;
+            backdrop-filter: blur(var(--blur-strength));
+            -webkit-backdrop-filter: blur(var(--blur-strength));
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover Effect: The Card "Lifts" */
+        .note-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--glass-highlight);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* Dynamic Sizes for Bento Grid */
+        .note-card.tall { grid-row: span 2; }
+        .note-card.wide { grid-column: span 2; }
+        .note-card.giant { grid-column: span 2; grid-row: span 2; }
+
+        /* Card Content Styling */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            opacity: 0.5;
+            text-transform: uppercase;
+        }
+
+        .card-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 1.2rem;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+
+        .card-body {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #ccc;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        /* Category Pills */
+        .pill-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .category-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Pill Colors */
+        .pill-work { background: rgba(198, 240, 153, 0.1); color: var(--accent-lime); border: 1px solid rgba(198, 240, 153, 0.2); }
+        .pill-journal { background: rgba(187, 154, 247, 0.1); color: var(--accent-purple); border: 1px solid rgba(187, 154, 247, 0.2); }
+        .pill-todo { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); }
+
+        /* --- 5. Floating Input Bar (The Portal) --- */
+        .input-dock {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-width: 90%;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            z-index: 100;
+            transition: width 0.4s ease;
+        }
+
+        .input-dock:focus-within {
+            width: 700px;
+            border-color: var(--accent-purple);
+        }
+
+        .ai-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), #4c1d95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .ai-indicator span {
+            display: block;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.8); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px white; }
+            100% { transform: scale(0.8); opacity: 0.7; }
+        }
+
+        input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            padding-right: 20px;
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* --- Utility Classes for Animations --- */
+        .fade-out {
+            opacity: 0.2;
+            transform: scale(0.95);
+            filter: blur(4px);
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-mesh"></div>
+    <div id="ai-orb"></div>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Flux.</h1>
+                <div class="mode-toggles">
+                    <div class="mode-pill active" onclick="setMode('focus')">Focus Mode</div>
+                    <div class="mode-pill" onclick="setMode('creative')">Creative Mode</div>
+                </div>
+            </div>
+            <div class="meta-status">
+                <p id="time-display">00:00</p>
+                <p style="color: var(--accent-lime)">AI ACTIVE • INDEXING</p>
+            </div>
+        </header>
+
+        <div class="grid-canvas" id="notes-grid">
+            <!-- 
+                Grid is populated dynamically, but here is the structure:
+                Notes have categories "work", "creative", "personal"
+            -->
+            
+            <div class="note-card wide category-work" data-priority="high">
+                <div class="card-header">
+                    <div class="card-date">TODAY 09:00</div>
+                    <div class="card-icon">⚡</div>
+                </div>
+                <div class="card-title">Q4 Product Roadmap</div>
+                <div class="card-body">Review the quarterly goals. Focus on the integration of the new agentic API for the mobile users.</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-work">STRATEGY</div>
+                    <div class="category-pill pill-todo">URGENT</div>
+                </div>
+            </div>
+
+            <div class="note-card category-journal" data-priority="low">
+                <div class="card-header">
+                    <div class="card-date">YESTERDAY</div>
+                </div>
+                <div class="card-title">Architectural Patterns</div>
+                <div class="card-body">Maybe the UI shouldn't be static. What if the buttons dissolved after use?</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-journal">THOUGHTS</div>
+                </div>
+            </div>
+
+            <div class="note-card tall category-work" data-priority="medium">
+                <div class="card-header">
+                    <div class="card-date">UPCOMING</div>
+                </div>
+                <div class="card-title">Client Meeting: Apex Corp</div>
+                <div class="card-body">
+                    <ul>
+                        <li>- Discuss timeline</li>
+                        <li>- Budget review</li>
+                        <li>- Design handover</li>
+                    </ul>
+                    <br>
+                    <small>Remember to bring the prototype.</small>
+                </div>
+                <div class="pill-container">
+                    <div class="category-pill pill-work">MEETING</div>
+                </div>
+            </div>
+
+            <div class="note-card category-creative" data-priority="medium">
+                <div class="card-header">
+                    <div class="card-date">JUST NOW</div>
+                </div>
+                <div class="card-title">Color Palette Idea</div>
+                <div class="card-body">Obsidian, Lime, and a touch of deep violet for the shadows.</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-journal">DESIGN</div>
+                </div>
+            </div>
+
+            <div class="note-card category-work" data-priority="high">
+                <div class="card-header">
+                    <div class="card-date">DUE 2PM</div>
+                </div>
+                <div class="card-title">Deploy Hotfix</div>
+                <div class="card-body">Fix the login loop on the staging server.</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-work">DEV</div>
+                </div>
+            </div>
+             <div class="note-card wide category-creative" data-priority="low">
+                <div class="card-header">
+                    <div class="card-date">SAVED</div>
+                </div>
+                <div class="card-title">Book List 2026</div>
+                <div class="card-body">"The Age of AI Symbiosis", "Digital Botany", "Rust for UI Design".</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-journal">READING</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Input Dock -->
+    <div class="input-dock">
+        <div class="ai-indicator">
+            <span></span>
+        </div>
+        <input type="text" placeholder="Tell Flux to remember, organize, or draft..." id="flux-input">
+    </div>
+
+    <script>
+        // --- 1. Custom Cursor (The AI Orb) Logic ---
+        const orb = document.getElementById('ai-orb');
+        let mouseX = 0, mouseY = 0;
+        let orbX = 0, orbY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Smooth follow logic (Lerp)
+        function animateOrb() {
+            const speed = 0.15; // The delay/smoothness factor
+            orbX += (mouseX - orbX) * speed;
+            orbY += (mouseY - orbY) * speed;
+            
+            orb.style.left = `${orbX}px`;
+            orb.style.top = `${orbY}px`;
+            
+            requestAnimationFrame(animateOrb);
+        }
+        animateOrb();
+
+        // Orb Interactions
+        const interactables = document.querySelectorAll('.note-card, .mode-pill, input');
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                orb.classList.add('hover-active');
+            });
+            el.addEventListener('mouseleave', () => {
+                orb.classList.remove('hover-active');
+            });
+        });
+
+        // --- 2. Time Logic ---
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('time-display').innerText = timeString;
+            
+            // Auto-trigger Focus mode during work hours (9-5) - Simulation
+            // if(now.getHours() >= 9 && now.getHours() < 17) setMode('focus');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // --- 3. "Agentic" Reordering (Mode Switcher) ---
+        function setMode(mode) {
+            // Update pills UI
+            document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const cards = document.querySelectorAll('.note-card');
+            const orb = document.getElementById('ai-orb');
+
+            // Indicate AI thinking
+            orb.classList.add('thinking');
+            setTimeout(() => orb.classList.remove('thinking'), 1000);
+
+            cards.forEach(card => {
+                // Reset states
+                card.classList.remove('fade-out');
+                
+                // Logic based on mode
+                if (mode === 'focus') {
+                    // In focus mode, dim creative notes, highlight work/high priority
+                    if (card.classList.contains('category-creative') || card.dataset.priority === 'low') {
+                        card.classList.add('fade-out');
+                    }
+                } else if (mode === 'creative') {
+                    // In creative mode, dim strictly work stuff
+                    if (card.classList.contains('category-work')) {
+                        card.classList.add('fade-out');
+                    }
+                }
+            });
+        }
+
+        // --- 4. Input Simulation ---
+        const input = document.getElementById('flux-input');
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const val = input.value;
+                input.value = '';
+                
+                // Simulate AI creating a note
+                createNote(val);
+            }
+        });
+
+        function createNote(text) {
+            const grid = document.getElementById('notes-grid');
+            
+            // Create element
+            const div = document.createElement('div');
+            div.className = 'note-card';
+            div.style.animation = 'breathe 0.5s ease';
+            
+            // Simple mock AI classification
+            let categoryClass = 'pill-journal';
+            let categoryText = 'THOUGHT';
+            
+            if(text.toLowerCase().includes('meeting') || text.toLowerCase().includes('call')) {
+                categoryClass = 'pill-work';
+                categoryText = 'WORK';
+            } else if (text.toLowerCase().includes('buy') || text.toLowerCase().includes('todo')) {
+                categoryClass = 'pill-todo';
+                categoryText = 'TASK';
+            }
+
+            div.innerHTML = `
+                <div class="card-header">
+                    <div class="card-date">JUST NOW</div>
+                </div>
+                <div class="card-title">New Note</div>
+                <div class="card-body">${text}</div>
+                <div class="pill-container">
+                    <div class="category-pill ${categoryClass}">${categoryText}</div>
+                </div>
+            `;
+            
+            // Insert at top
+            grid.insertBefore(div, grid.firstChild);
+        }
+    </script>
+</body>
+</html>
