@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="flux">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Notes | Theming Engine</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;700&family=Inter:wght@300;400;600&family=Space+Grotesk:wght@400;700&family=VT323&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- CORE VARIABLES (Default: Flux/Glass) --- */
+        :root {
+            /* Colors */
+            --bg-main: #050505;
+            --text-main: #ECECEC;
+            --text-muted: #888888;
+            --accent-primary: #bb9af7;
+            /* Purple */
+            --accent-secondary: #c6f099;
+            /* Lime */
+
+            /* Surface & Glass */
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            --blur-strength: 24px;
+
+            /* Shape & feel */
+            --card-radius: 24px;
+            --border-width: 1px;
+            --font-head: 'Instrument Serif', serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            /* Orb */
+            --orb-bg: rgba(255, 255, 255, 0.9);
+            --orb-blend: exclusion;
+
+            /* Effects */
+            --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --mesh-opacity: 0.8;
+            --text-highlight: var(--text-main);
+            /* Default hover text color */
+        }
+
+        /* --- THEME OVERRIDES --- */
+
+        /* 1. NEON (Cyberpunk) */
+        [data-theme="neon"] {
+            --bg-main: #000000;
+            --text-main: #fff;
+            --text-muted: #b0b0b0;
+            --accent-primary: #0ff;
+            /* Cyan */
+            --accent-secondary: #ff80ff;
+            /* Lighter Pink for better visibility */
+            /* Magenta */
+            --glass-surface: rgba(10, 10, 10, 0.6);
+            --glass-border: #333;
+            --glass-highlight: #0ff;
+            --blur-strength: 10px;
+            --card-radius: 4px;
+            --shadow-hover: 0 0 20px rgba(0, 255, 255, 0.4);
+            --font-head: 'Space Grotesk', sans-serif;
+            --mesh-opacity: 0.4;
+        }
+
+        /* 2. MINIMALIST (Clean) */
+        [data-theme="minimalist"] {
+            --bg-main: #ffffff;
+            --text-main: #111;
+            --text-muted: #666;
+            --accent-primary: #111;
+            --accent-secondary: #999;
+            --glass-surface: #ffffff;
+            --glass-border: #e5e5e5;
+            --glass-highlight: #000;
+            --blur-strength: 0px;
+            --card-radius: 0px;
+            --shadow-card: none;
+            --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --orb-bg: #000;
+            --orb-blend: normal;
+            --mesh-opacity: 0;
+            --text-highlight: #fff;
+            /* Fix hover contrast */
+            /* No background mesh */
+        }
+
+        /* 3. BRUTALIST (Neo-Brutalism) */
+        [data-theme="brutalist"] {
+            --bg-main: #fff4e0;
+            --text-main: #000;
+            --text-muted: #000;
+            --accent-primary: #ff6b6b;
+            --accent-secondary: #4ecdc4;
+            --glass-surface: #ffffff;
+            --glass-border: #000000;
+            --glass-highlight: #000000;
+            --blur-strength: 0px;
+            --card-radius: 0px;
+            --border-width: 3px;
+            --shadow-card: 6px 6px 0px #000;
+            --shadow-hover: 10px 10px 0px #000;
+            --font-head: 'Space Grotesk', sans-serif;
+            --orb-bg: #000;
+            --orb-blend: normal;
+            --mesh-opacity: 0;
+            --text-highlight: #fff;
+            /* Fix hover contrast */
+        }
+
+        /* 4. TERMINAL (CLI/Hacker) */
+        [data-theme="terminal"] {
+            --bg-main: #0d0d0d;
+            --text-main: #33ff00;
+            --text-muted: #4caf50;
+            /* Lighter green for visibility */
+            --accent-primary: #33ff00;
+            --accent-secondary: #33ff00;
+            --glass-surface: #000;
+            --glass-border: #2e7d32;
+            /* Visible border */
+            --glass-highlight: #33ff00;
+            --blur-strength: 0px;
+            --card-radius: 0px;
+            --border-width: 1px;
+            --font-head: 'VT323', monospace;
+            --font-body: 'VT323', monospace;
+            --font-mono: 'VT323', monospace;
+            --ui-font-size: 1.4rem;
+            /* Specific variable for base size */
+            --orb-bg: #33ff00;
+            --orb-blend: normal;
+            --mesh-opacity: 0;
+            --shadow-hover: none;
+            --text-highlight: #000;
+            /* Fix hover contrast (Black on Green) */
+        }
+
+        /* Enforce larger font for terminal */
+        [data-theme="terminal"] body {
+            font-size: 22px;
+            letter-spacing: 0.05em;
+        }
+
+        /* 5. CREAMY (Paper/Warm) */
+        [data-theme="creamy"] {
+            --bg-main: #F7F5F0;
+            --text-main: #4A403A;
+            --text-muted: #6e5d4e;
+            /* Darker brown for contrast */
+            --accent-primary: #D4A373;
+            --accent-secondary: #A9BA9D;
+            --glass-surface: #fff;
+            --glass-border: transparent;
+            --glass-highlight: #E6DCCD;
+            --blur-strength: 0px;
+            --card-radius: 16px;
+            --shadow-card: 0 4px 20px rgba(74, 64, 58, 0.05);
+            --mesh-opacity: 0.1;
+            --orb-bg: #4A403A;
+            --orb-blend: normal;
+        }
+
+        /* 6. CUTE (Soft/Pastel) */
+        [data-theme="cute"] {
+            --bg-main: #fff0f5;
+            --text-main: #5e4b56;
+            --text-muted: #7a5c6b;
+            /* Darker mauve for contrast */
+            --accent-primary: #ffadd6;
+            --accent-secondary: #4cd97b;
+            /* Darker mint green for visibility */
+            --glass-surface: rgba(255, 255, 255, 0.6);
+            --glass-border: #fff;
+            --glass-highlight: #ffe0ef;
+            --blur-strength: 12px;
+            --card-radius: 35px;
+            /* Super round */
+            --font-head: 'Space Grotesk', sans-serif;
+            --shadow-hover: 0 10px 25px rgba(255, 173, 214, 0.4);
+            --mesh-opacity: 0.5;
+            --orb-bg: #ffadd6;
+            --orb-blend: multiply;
+        }
+
+        /* --- BASE STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, transform 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            cursor: none;
+        }
+
+        /* --- BACKGROUND MESH --- */
+        .ambient-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.2), transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(50, 80, 60, 0.2), transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(20, 20, 20, 0.2), transparent 100%);
+            filter: blur(60px);
+            opacity: var(--mesh-opacity);
+            transition: opacity 0.5s ease;
+        }
+
+        /* --- ORB --- */
+        #ai-orb {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--orb-bg);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: var(--orb-blend);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-radius 0.3s;
+        }
+
+        #ai-orb.hover-active {
+            width: 80px;
+            height: 80px;
+            background: transparent;
+            border: 1px solid var(--text-main);
+            backdrop-filter: blur(2px);
+        }
+
+        /* Theme Specific Cursors */
+        [data-theme="neon"] #ai-orb {
+            box-shadow: 0 0 15px var(--accent-primary), inset 0 0 10px var(--accent-primary);
+            border: 2px solid var(--accent-primary);
+            background: transparent;
+        }
+
+        [data-theme="minimalist"] #ai-orb {
+            width: 8px;
+            height: 8px;
+            background: #000;
+            mix-blend-mode: normal;
+        }
+
+        [data-theme="minimalist"] #ai-orb.hover-active {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #000;
+            background: transparent;
+        }
+
+        [data-theme="brutalist"] #ai-orb {
+            border-radius: 0;
+            width: 24px;
+            height: 24px;
+            background: #000;
+        }
+
+        [data-theme="brutalist"] #ai-orb.hover-active {
+            border-radius: 0;
+            border: 3px solid #000;
+        }
+
+        [data-theme="terminal"] #ai-orb {
+            border-radius: 0;
+            width: 15px;
+            height: 20px;
+            background: var(--accent-primary);
+            animation: blinkCursor 1s infinite;
+        }
+
+        [data-theme="terminal"] #ai-orb.hover-active {
+            border: 1px solid var(--accent-primary);
+            background: transparent;
+            animation: none;
+        }
+
+        @keyframes blinkCursor {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* System Cursor Override Class */
+        body.use-native-cursor {
+            cursor: auto;
+        }
+
+        body.use-native-cursor #ai-orb {
+            display: none !important;
+        }
+
+        /* --- LAYOUT --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px 120px 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .header-content h1 {
+            font-family: var(--font-head);
+            font-size: 4rem;
+            font-weight: 400;
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+        }
+
+        .meta-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        /* --- THEME SWITCHER UI --- */
+        .theme-engine {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            padding: 8px 16px;
+            background: var(--glass-surface);
+            border: var(--border-width) solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+            /* Prevent text highlighting on rapid clicks */
+        }
+
+        .theme-btn:active {
+            transform: scale(0.95);
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 12px;
+            background: var(--bg-main);
+            border: var(--border-width) solid var(--glass-border);
+            border-radius: 16px;
+            padding: 8px;
+            width: 200px;
+
+            /* Hidden by default */
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* The class JS will toggle */
+        .theme-dropdown.is-open {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .theme-option {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: var(--font-body);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-option:hover {
+            background: var(--glass-highlight);
+            color: var(--text-highlight);
+        }
+
+        .theme-option span.dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* --- GRID & CARDS --- */
+        .grid-canvas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-auto-rows: 240px;
+            gap: 24px;
+        }
+
+        .note-card {
+            background: var(--glass-surface);
+            border: var(--border-width) solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            backdrop-filter: blur(var(--blur-strength));
+            -webkit-backdrop-filter: blur(var(--blur-strength));
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow-card);
+        }
+
+        .note-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--glass-highlight);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Brutalist & Terminal specifics for layout */
+        [data-theme="brutalist"] .note-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 14px 14px 0px #000;
+        }
+
+        [data-theme="terminal"] .note-card:hover {
+            transform: none;
+            background: #111;
+            border-color: var(--accent-primary);
+        }
+
+        .note-card.tall {
+            grid-row: span 2;
+        }
+
+        .note-card.wide {
+            grid-column: span 2;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .card-date {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            opacity: 0.5;
+            text-transform: uppercase;
+        }
+
+        .card-title {
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .card-body {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        /* --- PILLS --- */
+        .pill-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .category-pill {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+        }
+
+        /* Pill coloring adapts to themes via opacity */
+        .pill-work {
+            background: rgba(198, 240, 153, 0.2);
+            color: var(--accent-secondary);
+            border-color: var(--accent-secondary);
+        }
+
+        .pill-journal {
+            background: rgba(187, 154, 247, 0.2);
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        /* Brutalist Pill Override */
+        [data-theme="brutalist"] .category-pill {
+            border: 2px solid #000;
+            background: #fff;
+            color: #000;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Terminal Pill Override */
+        [data-theme="terminal"] .category-pill {
+            border: 1px solid var(--accent-primary);
+            background: #000;
+            color: var(--accent-primary);
+            border-radius: 0;
+        }
+
+        /* --- INPUT --- */
+        .input-dock {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-width: 90%;
+            background: var(--bg-main);
+            border: var(--border-width) solid var(--glass-border);
+            border-radius: 100px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-hover);
+            z-index: 100;
+        }
+
+        [data-theme="brutalist"] .input-dock {
+            border-radius: 0;
+            border-width: 3px;
+            border-color: #000;
+            box-shadow: 8px 8px 0 #000;
+        }
+
+        [data-theme="terminal"] .input-dock {
+            border-radius: 0;
+            background: #000;
+            border-color: var(--accent-primary);
+        }
+
+        .ai-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .ai-indicator span {
+            display: block;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            font-family: var(--font-body);
+        }
+
+        /* --- MODE TOGGLES --- */
+        .mode-toggles {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .mode-pill {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+        }
+
+        .mode-pill.active {
+            background: var(--text-main);
+            color: var(--bg-main);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+        }
+
+        .fade-out {
+            opacity: 0.1 !important;
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ambient-mesh"></div>
+    <div id="ai-orb"></div>
+
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Flux.</h1>
+                <div class="mode-toggles">
+                    <div class="mode-pill active" onclick="setMode('focus', this)">Focus</div>
+                    <div class="mode-pill" onclick="setMode('creative', this)">Creative</div>
+                </div>
+            </div>
+
+            <div class="meta-group">
+                <!-- THEME ENGINE UI -->
+                <div class="theme-engine">
+                    <!-- Added onclick event -->
+                    <div class="theme-btn" onclick="toggleThemeMenu(event)">
+                        <span>🎨 Theme Engine</span>
+                        <span style="font-size: 10px; opacity: 0.5;">▼</span>
+                    </div>
+
+                    <!-- Added ID "themeMenu" -->
+                    <div class="theme-dropdown" id="themeMenu">
+                        <div class="theme-option" onclick="setTheme('flux')"><span class="dot"
+                                style="background:#444"></span>Flux (Original)</div>
+                        <div class="theme-option" onclick="setTheme('neon')"><span class="dot"
+                                style="background:#0ff"></span>Neon Cyber</div>
+                        <div class="theme-option" onclick="setTheme('minimalist')"><span class="dot"
+                                style="background:#eee; border:1px solid #999"></span>Minimalist</div>
+                        <div class="theme-option" onclick="setTheme('brutalist')"><span class="dot"
+                                style="background:#ff6b6b"></span>Neo-Brutalist</div>
+                        <div class="theme-option" onclick="setTheme('terminal')"><span class="dot"
+                                style="background:#33ff00"></span>Terminal / CLI</div>
+                        <div class="theme-option" onclick="setTheme('creamy')"><span class="dot"
+                                style="background:#D4A373"></span>Creamy Paper</div>
+                        <div class="theme-option" onclick="setTheme('cute')"><span class="dot"
+                                style="background:#ffadd6"></span>Cute & Soft</div>
+
+                        <div style="height: 1px; background: var(--glass-border); margin: 8px 0;"></div>
+
+                        <div class="theme-option" onclick="toggleCursorMode()" id="cursorOption">
+                            <span>🖱️ System Cursor</span>
+                            <span id="cursorStatus" style="font-size: 10px; opacity: 0.5;">OFF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="text-align: right; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+                    <p id="time-display">00:00</p>
+                    <p style="color: var(--accent-secondary)">AI AGENT ACTIVE</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid-canvas" id="notes-grid">
+            <!-- Sample Content -->
+            <div class="note-card wide category-work" data-priority="high">
+                <div class="card-header">
+                    <div class="card-date">TODAY 09:00</div>
+                    <div>⚡</div>
+                </div>
+                <div class="card-title">Q4 Design System</div>
+                <div class="card-body">Refactor the token engine. We need to support dynamic font loading for the new
+                    "Brutalist" mode requested by marketing.</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-work">ARCHITECT</div>
+                    <div class="category-pill pill-work">URGENT</div>
+                </div>
+            </div>
+
+            <div class="note-card category-journal" data-priority="low">
+                <div class="card-header">
+                    <div class="card-date">YESTERDAY</div>
+                </div>
+                <div class="card-title">Generative UI</div>
+                <div class="card-body">The interface should feel like liquid. Notes shouldn't just sit there; they
+                    should drift.</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-journal">THOUGHTS</div>
+                </div>
+            </div>
+
+            <div class="note-card tall category-work" data-priority="medium">
+                <div class="card-header">
+                    <div class="card-date">UPCOMING</div>
+                </div>
+                <div class="card-title">Client Sync</div>
+                <div class="card-body">
+                    - Review mockups<br>
+                    - Approve color palette<br>
+                    - Sign off on "Cute" theme<br><br>
+                    <small>Don't forget the invoice.</small>
+                </div>
+                <div class="pill-container">
+                    <div class="category-pill pill-work">MEETING</div>
+                </div>
+            </div>
+
+            <div class="note-card category-creative" data-priority="medium">
+                <div class="card-header">
+                    <div class="card-date">JUST NOW</div>
+                </div>
+                <div class="card-title">Hex Codes</div>
+                <div class="card-body">#FF00FF for the neon accents. #050505 for the deep void background.</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-journal">ASSETS</div>
+                </div>
+            </div>
+
+            <div class="note-card wide category-creative" data-priority="low">
+                <div class="card-header">
+                    <div class="card-date">SAVED</div>
+                </div>
+                <div class="card-title">Reading List 2026</div>
+                <div class="card-body">"Biomimetic Design Patterns", "The End of Flat Design", "Agentic Workflows in
+                    CSS".</div>
+                <div class="pill-container">
+                    <div class="category-pill pill-journal">BOOKS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Input Dock -->
+    <div class="input-dock">
+        <div class="ai-indicator">
+            <span></span>
+        </div>
+        <input type="text" placeholder="Tell Flux what to organize..." id="flux-input">
+    </div>
+
+    <script>
+        // --- THEME ENGINE LOGIC ---
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            // Save preference
+            localStorage.setItem('flux-theme', themeName);
+
+            // Visual feedback on Orb
+            const orb = document.getElementById('ai-orb');
+            orb.style.transform = "scale(1.5)";
+            setTimeout(() => orb.style.transform = "translate(-50%, -50%)", 200);
+        }
+
+        // --- CURSOR LOGIC ---
+        let useNativeCursor = false;
+
+        function toggleCursorMode() {
+            useNativeCursor = !useNativeCursor;
+            applyCursorMode();
+            localStorage.setItem('flux-cursor-native', useNativeCursor);
+        }
+
+        function applyCursorMode() {
+            const body = document.body;
+            const status = document.getElementById('cursorStatus');
+
+            if (useNativeCursor) {
+                body.classList.add('use-native-cursor');
+                if (status) status.innerText = "ON";
+            } else {
+                body.classList.remove('use-native-cursor');
+                if (status) status.innerText = "OFF";
+            }
+        }
+
+        // Load saved settings on boot
+        const savedTheme = localStorage.getItem('flux-theme');
+        if (savedTheme) setTheme(savedTheme);
+
+        const savedCursor = localStorage.getItem('flux-cursor-native');
+        if (savedCursor === 'true') {
+            useNativeCursor = true;
+            applyCursorMode();
+        }
+
+        // --- ORB LOGIC ---
+        const orb = document.getElementById('ai-orb');
+        let mouseX = 0, mouseY = 0;
+        let orbX = 0, orbY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateOrb() {
+            if (useNativeCursor) {
+                requestAnimationFrame(animateOrb);
+                return;
+            }
+
+            // "Terminal" theme might want a choppier movement, but smooth is good for general
+            const speed = 0.15;
+            orbX += (mouseX - orbX) * speed;
+            orbY += (mouseY - orbY) * speed;
+            orb.style.left = `${orbX}px`;
+            orb.style.top = `${orbY}px`;
+            requestAnimationFrame(animateOrb);
+        }
+        animateOrb();
+
+        // Orb Hover States
+        const interactables = document.querySelectorAll('.note-card, .mode-pill, input, .theme-btn, .theme-option');
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => orb.classList.add('hover-active'));
+            el.addEventListener('mouseleave', () => orb.classList.remove('hover-active'));
+        });
+
+        // --- TIME & MODE LOGIC ---
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time-display').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        function setMode(mode, el) {
+            // Remove active class from all pills
+            document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+
+            // Add to clicked element
+            if (el) el.classList.add('active');
+
+            const cards = document.querySelectorAll('.note-card');
+
+            cards.forEach(card => {
+                card.classList.remove('fade-out');
+                if (mode === 'focus') {
+                    if (card.classList.contains('category-creative') || card.dataset.priority === 'low') card.classList.add('fade-out');
+                } else if (mode === 'creative') {
+                    if (card.classList.contains('category-work')) card.classList.add('fade-out');
+                }
+            });
+        }
+
+        // --- INPUT SIMULATION ---
+        const input = document.getElementById('flux-input');
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                createNote(input.value);
+                input.value = '';
+            }
+        });
+
+        function createNote(text) {
+            const grid = document.getElementById('notes-grid');
+            const div = document.createElement('div');
+            div.className = 'note-card';
+            div.style.animation = 'pulse 0.5s ease';
+
+            // Logic for pill style
+            let cat = 'pill-journal'; let txt = 'NOTE';
+            if (text.toLowerCase().includes('urgent')) { cat = 'pill-work'; txt = 'URGENT'; }
+
+            div.innerHTML = `
+            <div class="card-header"><div class="card-date">JUST NOW</div></div>
+            <div class="card-title">New Entry</div>
+            <div class="card-body">${text}</div>
+            <div class="pill-container"><div class="category-pill ${cat}">${txt}</div></div>
+            `;
+            grid.insertBefore(div, grid.firstChild);
+
+            // Re-attach hover listener for new element
+            div.addEventListener('mouseenter', () => orb.classList.add('hover-active'));
+            div.addEventListener('mouseleave', () => orb.classList.remove('hover-active'));
+        }
+
+        // --- NEW MENU LOGIC ---
+
+        function toggleThemeMenu(event) {
+            // Stop the click from bubbling to the document (which would immediately close it)
+            event.stopPropagation();
+            const menu = document.getElementById('themeMenu');
+            menu.classList.toggle('is-open');
+        }
+
+        // Close the menu if the user clicks anywhere else on the screen
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('themeMenu');
+            const btn = document.querySelector('.theme-btn');
+
+            // If the menu is open, and the click target was NOT inside the menu or the button
+            if (menu.classList.contains('is-open') && !menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.remove('is-open');
+            }
+        });
+    </script>
+</body>
+
+</html>
