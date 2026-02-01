@@ -46,6 +46,8 @@
             --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.1);
             --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.3);
             --mesh-opacity: 0.8;
+            --text-highlight: var(--text-main);
+            /* Default hover text color */
         }
 
         /* --- THEME OVERRIDES --- */
@@ -87,6 +89,8 @@
             --orb-bg: #000;
             --orb-blend: normal;
             --mesh-opacity: 0;
+            --text-highlight: #fff;
+            /* Fix hover contrast */
             /* No background mesh */
         }
 
@@ -109,6 +113,8 @@
             --orb-bg: #000;
             --orb-blend: normal;
             --mesh-opacity: 0;
+            --text-highlight: #fff;
+            /* Fix hover contrast */
         }
 
         /* 4. TERMINAL (CLI/Hacker) */
@@ -135,6 +141,8 @@
             --orb-blend: normal;
             --mesh-opacity: 0;
             --shadow-hover: none;
+            --text-highlight: #000;
+            /* Fix hover contrast (Black on Green) */
         }
 
         /* Enforce larger font for terminal */
@@ -410,7 +418,7 @@
 
         .theme-option:hover {
             background: var(--glass-highlight);
-            color: var(--text-main);
+            color: var(--text-highlight);
         }
 
         .theme-option span.dot {
