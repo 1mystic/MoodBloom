@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* --- FLUX DESIGN SYSTEM --- */
+@theme inline {
+  --color-background: var(--bg-main);
+  --color-foreground: var(--text-main);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-instrument);
+  --font-mono: var(--font-jetbrains);
+}
+
+:root {
+  /* Core Colors */
+  --bg-main: #050505;
+  --text-main: #ECECEC;
+  --text-muted: #888888;
+  --accent-primary: #bb9af7;
+  /* Purple */
+  --accent-secondary: #c6f099;
+  /* Lime */
+
+  /* Glass Surface */
+  --glass-surface: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.15);
+  --blur-strength: 24px;
+
+  /* Shape & Feel */
+  --card-radius: 24px;
+  --border-width: 1px;
+
+  /* Orb */
+  --orb-bg: rgba(255, 255, 255, 0.9);
+  --orb-blend: exclusion;
+  --mesh-opacity: 0.8;
+
+  /* Effects */
+  --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.3);
+
+  /* Hover Text Highlight Default */
+  --text-highlight: var(--text-main);
+}
+
+/* --- THEME OVERRIDES --- */
+[data-theme="neon"] {
+  --bg-main: #000000;
+  --text-main: #fff;
+  --text-muted: #b0b0b0;
+  --accent-primary: #0ff;
+  --accent-secondary: #ff80ff;
+  --glass-surface: rgba(10, 10, 10, 0.6);
+  --glass-border: #333;
+  --glass-highlight: #0ff;
+  --blur-strength: 10px;
+  --card-radius: 4px;
+  --shadow-hover: 0 0 20px rgba(0, 255, 255, 0.4);
+  --mesh-opacity: 0.4;
+}
+
+[data-theme="minimalist"] {
+  --bg-main: #ffffff;
+  --text-main: #111;
+  --text-muted: #666;
+  --accent-primary: #111;
+  --accent-secondary: #999;
+  --glass-surface: #ffffff;
+  --glass-border: #e5e5e5;
+  --glass-highlight: #000;
+  --blur-strength: 0px;
+  --card-radius: 0px;
+  --shadow-card: none;
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --orb-bg: #000;
+  --orb-blend: normal;
+  --mesh-opacity: 0;
+  --text-highlight: #fff;
+}
+
+[data-theme="brutalist"] {
+  --bg-main: #fff4e0;
+  --text-main: #000;
+  --text-muted: #000;
+  --accent-primary: #ff6b6b;
+  --accent-secondary: #4ecdc4;
+  --glass-surface: #ffffff;
+  --glass-border: #000000;
+  --glass-highlight: #000000;
+  --blur-strength: 0px;
+  --card-radius: 0px;
+  --border-width: 3px;
+  --shadow-card: 6px 6px 0px #000;
+  --shadow-hover: 10px 10px 0px #000;
+  --orb-bg: #000;
+  --orb-blend: normal;
+  --mesh-opacity: 0;
+  --text-highlight: #fff;
+}
+
+[data-theme="terminal"] {
+  --bg-main: #0d0d0d;
+  --text-main: #33ff00;
+  --text-muted: #4caf50;
+  --accent-primary: #33ff00;
+  --accent-secondary: #33ff00;
+  --glass-surface: #000;
+  --glass-border: #2e7d32;
+  --glass-highlight: #33ff00;
+  --blur-strength: 0px;
+  --card-radius: 0px;
+  --border-width: 1px;
+  --orb-bg: #33ff00;
+  --orb-blend: normal;
+  --mesh-opacity: 0;
+  --shadow-hover: none;
+  --text-highlight: #000;
+}
+
+/* Base Styles */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  min-height: 100vh;
+  /* cursor: none; */
+  /* Disabled for now */
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Utilities */
+.glass-panel {
+  background: var(--glass-surface);
+  border: var(--border-width) solid var(--glass-border);
+  border-radius: var(--card-radius);
+  backdrop-filter: blur(var(--blur-strength));
+}
